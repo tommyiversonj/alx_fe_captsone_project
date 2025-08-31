@@ -18,7 +18,8 @@ const MovieDetails = () => {
 
             try {
                 const res = await axios.get(
-                    'http://www.omdbapi.com/?apikey=${import.meta.env.VITE_OMDB_API_KEY}&s=${encodeURIComponent(query)}'
+                    `http://www.omdbapi.com/?apikey=${import.meta.env.VITE_OMDB_API_KEY}&s=${encodeURIComponent(query)}`
+                    
                 );
 
                 if (res.data.Response === "True") {
