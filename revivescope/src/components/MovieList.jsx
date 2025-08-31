@@ -17,8 +17,7 @@ const MovieList = ({ movies = [] }) => {
             {movies.map((movie) => (
                 <MovieCard
                     key={movie.imdbID}
-                    movie={movie}
-                />
+                    movie={movie} />
             ))}
         </div>
     );
