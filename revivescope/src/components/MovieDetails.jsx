@@ -1,93 +1,56 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
+import React from "react";
+import PropTypes from "prop-types";
 import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 
-
-const MovieDetails = () => {
-    const { id } = useParams();
-    const [movie, setMovie] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-
-    useEffect(() => {
-        const fetchMovieDetails = async () => {
-            setLoading(true);
-            setError("");
-
-            try {
-                const res = await axios.get(
-                    `http://www.omdbapi.com/?apikey=${import.meta.env.VITE_OMDB_API_KEY}&s=${encodeURIComponent(query)}`
-                    
-                );
-
-                if (res.data.Response === "True") {
-                    setMovie(res.data);
-                } else {
-                    setError(res.data.Error || "Hmm, couldn't find that movie.");
-                }
-            } catch (err) {
-                console.error("API call failed:", err);
-                setError("Failed to load movie details. Check your connection!");
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchMovieDetails();
-    }, [id]);
-
-    if (loading) return <Loader />;
-    if (error) return <ErrorMessage message={error} />;
-    
-    if (!movie) {
-        return <ErrorMessage message="Movie data not available." />;
+const MovieDetails = ({ movie, loading, error, onClose }) => {
+    if (loading) {
+    return <Loader />;
     }
-
-    const poster = movie.Poster !== "N/A" ? movie.Poster : "/placeholder.jpg";
+    if (error) {
+    return <ErrorMessage message={error} />;
+    }
+    if (!movie) {
+    return <div className="text-gray-500 text-center py-8">Select a movie to see details.</div>;
+    }
+    
 
     return (
-        <div className="max-w-6xl mx-auto p-6 flex flex-col md:flex-row gap-6">
-            <img src={poster} alt={movie.Title}
-            className="w-full md:w-1/3 rounded-2xl shadow-lg"/>
-
-            <div className="flex-1 text-gray-200">
-                <h2 className="text-3xl font-bold text-cyan-400">{movie.Title}</h2>
-                <p className="text-gray-400 mt-1">{movie.Year}</p>
-
-                <div className="mt-2 flex flex-wrap gap-2">
-                    {movie.Genre && movie.Genre.split(", ").map((genre) => (
-                        <span key={genre}
-                            className="px-3 py-1 bg-[#161B22] rounded-full text-sm font-semibold">
-                            {genre}
-                        </span>
-                    ))}
-                    <span className="px-3 py-1 bg-[#161B22] rounded-full text-sm font-semibold">
-                        {movie.Runtime}
-                    </span>
-                </div>
-
-                <div className="mt-4">
-                    <h3 className="font-bold text-lg mb-2">Plot</h3>
-                    <p>{movie.Plot}</p>
-                </div>
-
-                <div className="mt-4">
-                    <h3 className="font-bold text-lg mb-1">Director</h3>
-                    <p>{movie.Director}</p>
-
-                    <h3 className="font-bold text-lg mt-3 mb-1">Cast</h3>
-                    <p>{movie.Actors}</p>
-                </div>
-
-                <div className="mt-6">
-                    <button className="bg-cyan-400 hover:bg-cyan-500 px-6 py-2 rounded-2xl font-bold text-black transition">
-                        Add to Favorites
-                    </button>
-                </div>
+        <section className="p-6 bg-white rounded shadow-md max-w-xl mx-auto">
+            <div className="flex justify-between items-center mb-2">
+                <h2 className="text-2xl font-bold">{movie.title}</h2>
+                {onClose && (
+                    <button
+                        className="text-gray-400 hover:text-gray-700"
+                        onClick={onClose}
+                        aria-label="Close details"
+                    >✖️</button>
+                )}
             </div>
-        </div>
+            <p className="text-gray-600 mb-4">{movie.releaseDate}</p>
+            {movie.poster && (
+                <img src={movie.poster} alt={`${movie.title} poster`} className="w-48 mb-4 rounded" />
+            )}
+            <p className="mb-2">{movie.description}</p>
+            {movie.genres && movie.genres.length > 0 && (
+                <div className="mb-2">
+                    <strong>Genres:</strong> {movie.genres.join(", ")}
+                </div>
+            )}
+            {movie.rating && (
+                <div>
+                    <strong>Rating:</strong> {movie.rating}
+                </div>
+            )}
+        </section>
     );
+};
+
+MovieDetails.propTypes = {
+    movie: PropTypes.object,
+    loading: PropTypes.bool,
+    error: PropTypes.string,
+    onClose: PropTypes.func,
 };
 
 export default MovieDetails;
