@@ -33,7 +33,7 @@ MovieList.propTypes = {
     loading: PropTypes.bool,
     error: PropTypes.string,
     onSelect: PropTypes.func,
-
+    
 };
 
 export default MovieList;
